@@ -51,19 +51,31 @@ function Pet() {
       .catch(console.error);
   }
 
-  const getAll = (res) => {
-    const getAll = `
-      SELECT *
-        FROM pets;
-    `;
-  
-    return db 
-      .query(getAll)
-      .then((result) => result.rows)
-      .catch(console.error);
+  const getAll = (query) => {
+    let getAll;
+    if(query === undefined){
+      getAll = `
+        SELECT *
+          FROM pets;
+      `;
     }
 
-  const getOneById = (id, res) => {
+    else {
+      getAll = `
+        SELECT *
+          FROM pets
+          WHERE microchip = false;
+      `;
+    }
+
+    return db 
+    .query(getAll)
+    .then((result) => result.rows)
+    .catch(console.error);
+  }
+
+
+  const getOneById = (id) => {
     const getOneById = `
       SELECT * 
       FROM pets
@@ -87,20 +99,40 @@ function Pet() {
       .then((result) => result.rows)
       .catch(console.error);
     }
-    /*
-    const getNonMicrochipedPets = (id, res) => {
-      const getNonMicrochipedPets = `
-        SELECT * 
-        FROM pets
-        WHERE microchip = false;
-      `;
-  
-      return db
-        .query(getNonMicrochipedPets)
-        .then((result) => result.rows[0])
+
+    const getPetByType = (type, query) => {
+      const columnName = Object.keys(query)[0];
+      const columnValue = Object.values(query)[0];
+      console.log("col", columnName);
+
+      if(query === undefined){
+        const getPetByType = `
+          SELECT * 
+          FROM pets
+          WHERE type = $1;
+        `;
+
+        return db
+        .query(getPetByType, [type])
+        .then((result) => result.rows)
         .catch(console.error);
+        }
+
+      else {
+        const getPetByType = `
+          SELECT * 
+          FROM pets
+          WHERE type = $1
+          AND ${columnName} = $2;
+        `;
+        
+        return db
+        .query(getPetByType, [type, columnValue])
+        .then((result) => result.rows)
+        .catch(console.error);
+      }
     }
-    */
+
   const init = () => {
     createTable().then(() => {
       console.log("\nCreating mock data for Pets...\n");
@@ -114,6 +146,7 @@ function Pet() {
     getOneById,
     getAll,
     getPetTypes,
+    getPetByType,
     //getNonMicrochipedPets,
     init
   };

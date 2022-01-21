@@ -13,7 +13,7 @@ const createOne = async (req, res) => {
 
 const getAll = async (req, res) => {
   const all = Pet().getAll;
-  const thisRes = await all(res);
+  const thisRes = await all(req.query);
   return res.json({ data: thisRes });
 }
 
@@ -28,7 +28,15 @@ const getOneById = async (req, res) => {
 const getPetTypes = async (req, res) => {
   const types = Pet().getPetTypes;
   const thisRes = await types(res);
-  //make it so that types appears one per type
+  return res.json({ data: thisRes });
+}
+
+const getPetByType = async (req, res) => {
+  //console.log(req.query.breed);
+  const typeToGet = req.path.slice(1);
+
+  const type = Pet().getPetByType;
+  const thisRes = await type(typeToGet, req.query, res);
   return res.json({ data: thisRes });
 }
 
@@ -43,5 +51,6 @@ module.exports = {
   getAll,
   getOneById,
   getPetTypes,
+  getPetByType,
   getNonMicrochipedPets
 }

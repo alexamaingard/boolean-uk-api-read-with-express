@@ -39,11 +39,8 @@ const getNonFictionBooks = async (req, res) => {
 }
 
 const getBooksByAuthor = async (req, res) => {
-  //console.log(req.params);
-  const authorToGet = req.params.author;
-
   const authorBooks = Book().getBooksByAuthor;
-  const thisRes = await authorBooks(authorToGet, req.query.order, res);
+  const thisRes = await authorBooks(req.params.author, req.query.order, res);
   return res.json({ data: thisRes });
 }
 
